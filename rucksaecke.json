@@ -1,0 +1,5 @@
+{
+  "_hinweis": "faktor 1.5 = 50 Prozent mehr Faecher. Aenderung wirkt beim naechsten Serverstart.",
+  "faktor": 1.5,
+  "ausnahmen": []
+}
