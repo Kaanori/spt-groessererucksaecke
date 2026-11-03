@@ -5,7 +5,6 @@ Enlarges the compartments of all backpacks by a factor (default 1.5).
 ## Requirements
 
 - SPT 4.1.6 (server).
-- Recommended for multi-compartment backpacks: [RucksackAnordnung](https://github.com/Kaanori/spt-rucksackanordnung) (prevents overlapping compartments).
 
 ## Installation
 
@@ -23,7 +22,7 @@ Delete the mod's files from `SPT_Runtime/user/mods/GroessereRucksaecke/` (settin
 
 Factor and exceptions; takes effect on the next server start.
 
-For backpacks with several compartments, [RucksackAnordnung](https://github.com/Kaanori/spt-rucksackanordnung) (backpack layout) makes sure the enlarged compartments do not overlap.
+For backpacks with several compartments, RucksackAnordnung (backpack layout) makes sure the enlarged compartments do not overlap.
 
 ## Building from source
 
