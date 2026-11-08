@@ -38,7 +38,7 @@ public record ModMetadata : IModMetadata
     public string Name { get; init; } = "Groessere Rucksaecke";
     public string Author { get; init; } = "Kaan";
     public List<string>? Contributors { get; init; } = new();
-    public SemanticVersioning.Version Version { get; init; } = new(1, 0, 0);
+    public SemanticVersioning.Version Version { get; init; } = new(1, 1, 0);
     public SemanticVersioning.Range SptVersion { get; init; } = new("~4.1");
     public bool HasPrepatcher { get; init; } = false;
     public List<string>? Incompatibilities { get; init; } = new();
@@ -59,7 +59,7 @@ public class RucksackVergroesserer(
     {
         try
         {
-            var (faktor, ausnahmen) = EinstellungenLesen();
+            var (faktor, ausnahmen, breiteBehalten) = EinstellungenLesen();
             if (faktor <= 1.0)
             {
                 logger.Info($"[Groessere Rucksaecke] Faktor {faktor} - nichts zu tun.");
@@ -87,7 +87,9 @@ public class RucksackVergroesserer(
                     if (breit <= 0 || hoch <= 0) continue;
 
                     vorher += breit * hoch;
-                    var (neuBreit, neuHoch) = Skaliere(breit, hoch, faktor);
+                    var (neuBreit, neuHoch) = breiteBehalten
+                        ? NurHoeher(breit, hoch, faktor)
+                        : Skaliere(breit, hoch, faktor);
                     eig.CellsH = neuBreit;
                     eig.CellsV = neuHoch;
                     nachher += neuBreit * neuHoch;
@@ -113,7 +115,7 @@ public class RucksackVergroesserer(
             var zuwachs = (felderNeu / (double)felderAlt - 1) * 100;
             logger.Success($"[Groessere Rucksaecke] {anzahl} Rucksaecke: "
                            + $"{felderAlt} -> {felderNeu} Faecher ({zuwachs:+0.0;-0.0} %), "
-                           + $"Faktor {faktor}.");
+                           + $"Faktor {faktor}" + (breiteBehalten ? ", Breite wie im Original." : "."));
         }
         catch (Exception ex)
         {
@@ -131,6 +133,18 @@ public class RucksackVergroesserer(
     /// Ausgangsgroesse und dem Doppelten; groesser wird bei Faktor 1,5
     /// ohnehin nie gebraucht.
     /// </summary>
+    /// <summary>
+    /// "breiteBehalten": Das Fach waechst nur nach unten, die Breite bleibt wie im
+    /// Original. Breitere Faecher schieben im Inventar Inhalte rechts aus dem Bild.
+    /// Hoehe = Felder * Faktor / Breite, aufgerundet, mindestens eine Zeile mehr.
+    /// </summary>
+    internal static (int Breit, int Hoch) NurHoeher(int breit, int hoch, double faktor)
+    {
+        var ziel = breit * hoch * faktor;
+        var neuHoch = (int)Math.Ceiling(ziel / breit - 1e-9);
+        return (breit, Math.Max(hoch + 1, neuHoch));
+    }
+
     internal static (int Breit, int Hoch) Skaliere(int breit, int hoch, double faktor)
     {
         var ziel = (int)Math.Round(breit * hoch * faktor, MidpointRounding.AwayFromZero);
@@ -165,9 +179,9 @@ public class RucksackVergroesserer(
         return (bestBreit, bestHoch);
     }
 
-    private (double Faktor, HashSet<string> Ausnahmen) EinstellungenLesen()
+    private (double Faktor, HashSet<string> Ausnahmen, bool BreiteBehalten) EinstellungenLesen()
     {
-        var standard = (1.5, new HashSet<string>());
+        var standard = (1.5, new HashSet<string>(), false);
 
         var ordner = Pfad.GetDirectoryName(typeof(RucksackVergroesserer).Assembly.Location);
         var datei = Pfad.Combine(ordner ?? ".", "rucksaecke.json");
@@ -197,7 +211,10 @@ public class RucksackVergroesserer(
                 }
             }
 
-            return (faktor, ausnahmen);
+            var breiteBehalten = wurzel.TryGetProperty("breiteBehalten", out var bb)
+                                 && bb.ValueKind == JsonValueKind.True;
+
+            return (faktor, ausnahmen, breiteBehalten);
         }
         catch (Exception ex)
         {

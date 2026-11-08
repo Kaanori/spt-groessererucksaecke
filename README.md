@@ -16,7 +16,7 @@ bug, please open an [issue](https://github.com/Kaanori/spt-groessererucksaecke/i
 
 ## Installation
 
-1. Download `GroessereRucksaecke-1.0.0.zip` from the [Releases](https://github.com/Kaanori/spt-groessererucksaecke/releases) page.
+1. Download `GroessereRucksaecke-1.1.0.zip` from the [Releases](https://github.com/Kaanori/spt-groessererucksaecke/releases) page.
 2. Extract it **into your SPT game folder** (the folder that contains `EscapeFromTarkov.exe`).
    The ZIP already has the right layout; the mod ends up in `SPT_Runtime/user/mods/GroessereRucksaecke/`.
    On Windows, make sure "Extract All" does not add an extra subfolder.
@@ -28,7 +28,15 @@ Delete the mod's files from `SPT_Runtime/user/mods/GroessereRucksaecke/` (settin
 
 ## Settings: `rucksaecke.json`
 
-Factor and exceptions; takes effect on the next server start.
+Takes effect on the next server start.
+
+| Key | Default | Meaning |
+|---|---|---|
+| `faktor` | `1.5` | How much bigger every compartment gets (1.5 = +50 % cells). |
+| `breiteBehalten` | `false` | `true` = compartments keep their original **width** and only grow **downwards**. Use this if wide backpacks push items off the right edge of the inventory screen. |
+| `ausnahmen` | `[]` | Backpack template IDs that stay untouched. |
+
+> **Before switching `breiteBehalten` on:** move everything out of the extra columns on the right of your enlarged backpacks (stash included). Items that sit beyond the original width would end up outside the narrower compartment.
 
 For backpacks with several compartments, RucksackAnordnung (backpack layout) makes sure the enlarged compartments do not overlap.
 
@@ -54,4 +62,4 @@ Bugs and questions: [GitHub issues](https://github.com/Kaanori/spt-groessereruck
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT — see [LICENSE](https://github.com/Kaanori/spt-groessererucksaecke/blob/main/LICENSE).

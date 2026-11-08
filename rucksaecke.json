@@ -1,5 +1,7 @@
 {
   "_hinweis": "faktor 1.5 = 50 Prozent mehr Faecher. Aenderung wirkt beim naechsten Serverstart.",
   "faktor": 1.5,
+  "_hinweis breiteBehalten": "true = Faecher behalten die Original-Breite und wachsen nur nach unten. Vor dem Umschalten nichts in den zusaetzlichen rechten Spalten liegen lassen.",
+  "breiteBehalten": false,
   "ausnahmen": []
 }
