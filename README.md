@@ -1,6 +1,6 @@
 # GroessereRucksaecke (bigger backpacks)
 
-Enlarges the compartments of all backpacks by a factor (default 1.5).
+Enlarges the compartments of all backpacks by a factor (default 1.5) and – since 1.2.0 – keeps the compartments of multi-compartment backpacks from overlapping (client part).
 
 ## How this mod was made (AI disclosure)
 
@@ -12,19 +12,19 @@ bug, please open an [issue](https://github.com/Kaanori/spt-groessererucksaecke/i
 
 ## Requirements
 
-- SPT 4.1.6 (server).
+- SPT 4.1.6 (EFT 0.16.9). This mod has a client part and a server part; the ZIP contains both.
 
 ## Installation
 
-1. Download `GroessereRucksaecke-1.1.0.zip` from the [Releases](https://github.com/Kaanori/spt-groessererucksaecke/releases) page.
+1. Download `GroessereRucksaecke-1.2.0.zip` from the [Releases](https://github.com/Kaanori/spt-groessererucksaecke/releases) page.
 2. Extract it **into your SPT game folder** (the folder that contains `EscapeFromTarkov.exe`).
-   The ZIP already has the right layout; the mod ends up in `SPT_Runtime/user/mods/GroessereRucksaecke/`.
+   The ZIP already has the right layout; the mod ends up in `BepInEx/plugins/` (client part) and `SPT_Runtime/user/mods/GroessereRucksaecke/` (server part).
    On Windows, make sure "Extract All" does not add an extra subfolder.
-3. Restart the SPT server.
+3. Restart the SPT server and the game.
 
 ## Uninstall
 
-Delete the mod's files from `SPT_Runtime/user/mods/GroessereRucksaecke/` (settings: `BepInEx/config/` for client mods) and restart the SPT server.
+Delete the mod's files from `BepInEx/plugins/` (client part) and `SPT_Runtime/user/mods/GroessereRucksaecke/` (server part) (settings: `BepInEx/config/` for client mods) and restart the SPT server and the game.
 
 ## Settings: `rucksaecke.json`
 
@@ -38,7 +38,15 @@ Takes effect on the next server start.
 
 > **Before switching `breiteBehalten` on:** move everything out of the extra columns on the right of your enlarged backpacks (stash included). Items that sit beyond the original width would end up outside the narrower compartment.
 
-For backpacks with several compartments, RucksackAnordnung (backpack layout) makes sure the enlarged compartments do not overlap.
+## Multi-compartment backpacks (client part)
+
+Backpacks with several compartments (e.g. Mystery Ranch SATL, Dragon Egg MKII) ship their window layout as a fixed template: each compartment takes its size from the game data, but its *position* stays where the template put it. With enlarged compartments the upper ones would grow into the lower ones and overlap.
+
+The client part (`BepInEx/plugins/GroessereRucksaecke/`) fixes this: on first display it remembers the original layout and moves each compartment right/down by exactly as much as the compartments to its left or above have grown. Gaps are kept, overlap is ruled out, and the frame grows along. It only acts when a compartment really is larger than in the original template, so backpacks at vanilla size and single-compartment backpacks are untouched. Nothing runs per frame – it calculates once when you open a backpack.
+
+- F12 setting: **Fix overlapping compartments** (section "Backpacks"), on by default. Takes effect the next time you open a backpack.
+- Needs the server part: without enlarged compartments there is nothing to fix.
+- **Upgrading from the stand-alone RucksackAnordnung plugin:** delete `BepInEx/plugins/RucksackAnordnung.dll`. If it is still there, this client part detects it, stays off and logs a hint, so nothing is patched twice.
 
 ## Building from source
 
